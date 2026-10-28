@@ -1,6 +1,26 @@
 {% extends "templates/login.html" %}
 
-{% block nav_bar %}{% endblock %}
+{% block nav_bar %}
+  {# Keep the native theme control in the DOM for JupyterHub's darkmode.js,
+     including while the otherwise hidden redirect page is loading. #}
+  <header class="sym sym-nav" {% if custom.redirect_to %}hidden{% endif %}>
+    <div class="sym-wrap sym-nav-inner">
+      {% if not custom.redirect_to %}
+        <a href="{{ custom.org.url }}" class="sym-lockup">
+          <img src="{{ custom.org.logo_url }}"
+               alt="Schmidt Observatory System"
+               class="hub-logo sym-logo-color" />
+          <img src="{{ static_url('extra-assets/images/sos-logo-white.png') }}"
+               alt="Schmidt Observatory System"
+               class="sym-logo-white" />
+          <span class="sym-lockup-rule" aria-hidden="true"></span>
+          <b>Science<br>Symposium</b>
+        </a>
+      {% endif %}
+      {{ self.theme_toggle() }}
+    </div>
+  </header>
+{% endblock %}
 
 {% block stylesheet %}
   {% if custom.redirect_to %}
@@ -55,21 +75,6 @@
     <div class="sym"
          id="home"
          data-authenticator-login-url="{{ authenticator_login_url }}">
-
-      <header class="sym-nav">
-        <div class="sym-wrap sym-nav-inner">
-          <a href="{{ custom.org.url }}" class="sym-lockup">
-            <img src="{{ custom.org.logo_url }}"
-                 alt="Schmidt Observatory System"
-                 class="hub-logo sym-logo-color" />
-            <img src="{{ static_url('extra-assets/images/sos-logo-white.png') }}"
-                 alt="Schmidt Observatory System"
-                 class="sym-logo-white" />
-            <span class="sym-lockup-rule" aria-hidden="true"></span>
-            <b>Science<br>Symposium</b>
-          </a>
-        </div>
-      </header>
 
       <section class="sym-hero">
         <div class="sym-wrap sym-hero-grid">

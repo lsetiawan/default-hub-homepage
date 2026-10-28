@@ -143,7 +143,16 @@ body {
 .sym-nav-inner {
     display: flex;
     align-items: center;
+    gap: 12px;
     height: 68px;
+}
+
+.sym-nav #dark-theme-toggle {
+    flex-shrink: 0;
+    margin-left: auto;
+    min-width: 44px;
+    min-height: 44px;
+    color: var(--sym-ink);
 }
 
 .sym .sym-lockup {
@@ -178,6 +187,16 @@ body {
 
 .sym .sym-lockup:hover b {
     color: var(--sym-ink);
+}
+
+@media (max-width: 380px) {
+    .sym-nav .sym-lockup {
+        gap: 8px;
+    }
+
+    .sym-nav .sym-lockup img {
+        height: 34px;
+    }
 }
 
 /* Hero */

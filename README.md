@@ -74,6 +74,22 @@ You can run a local JupyterHub to test your login template changes.
 8. If you change templates, you need to restart JupyterHub to see changes.
    But for asset changes (JS, CSS, etc) you don't need a restart
 
+### Browser regression tests
+
+The regression suite renders the custom login page with the installed JupyterHub's
+parent templates and static assets, then checks theme switching, saved preferences,
+redirects, form fields, and phone layouts in Chromium. External font requests are
+blocked, so these checks use fallback fonts.
+
+```bash
+python3 -m pip install -r requirements-test.txt
+python3 -m playwright install chromium
+python3 -m unittest discover -s tests -v
+```
+
+To use an existing Chromium or Chrome executable, set
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to its path.
+
 ### 2. Test other template changes
 
 If you create a branch in this repository with a name that matches `<cluster-name>`-`<hub-name>`in the [2i2c hubs repository](https://github.com/2i2c-org/infrastructure/tree/HEAD/config/clusters), then the changes in this branch will be reflected on that cluster and hub. This can be used either for testing (if this branch gets deleted once the changes have been merged into the main branch), or for having specific homepage customizations per hub.

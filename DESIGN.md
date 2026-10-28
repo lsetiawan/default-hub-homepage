@@ -246,7 +246,7 @@ Quiet and solid; the only filled control on the page.
 - **Footer links:** footer-link with a 35% underline, white on hover.
 
 ### Navigation
-A sticky translucent bar holding one lockup: the org logo (42px high), a 1px by 26px rule divider, and "Science Symposium" in tracked uppercase muted text over two lines, which turns ink on hover. In dark theme every org logo swaps to the white version.
+A sticky translucent bar holding one lockup: the org logo (42px high, 34px at widths up to 380px), a 1px by 26px rule divider, and "Science Symposium" in tracked uppercase muted text over two lines, which turns ink on hover. In dark theme every org logo swaps to the white version. JupyterHub's native theme control sits at the right with a 44px touch target and the existing focus outline. The header is rendered through the `nav_bar` block and hidden on redirect pages, retaining the control in the DOM for the upstream theme script.
 
 ### Logo plates
 Jupyter and RStudio marks sit on 64px-high plates with 18px side padding, 1px rule border and 6px corners; the border turns ink on hover. In dark theme the plate is dark-logo-plate with no border.
