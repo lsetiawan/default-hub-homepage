@@ -1,266 +1,284 @@
 {% extends "templates/login.html" %}
 
-
-{% block nav_bar %}
-{% endblock %}
+{% block nav_bar %}{% endblock %}
 
 {% block stylesheet %}
-{% if custom.redirect_to %}
-<style>
-/* Hide the default modal that shows up in the JupyterHub home page */
-.fade {
-  display: none;
-}
-</style>
-{% else %}
-{{ super() }}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="{{ static_url('extra-assets/css/login.css') }}" type="text/css"/>
-{% endif %}
+  {% if custom.redirect_to %}
+    <style>
+      /* Hide the default modal that shows up in the JupyterHub home page */
+      .fade {
+        display: none;
+      }
+    </style>
+  {% else %}
+    {{ super() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap">
+    <link rel="stylesheet"
+          href="{{ static_url('extra-assets/css/login.css') }}" />
+  {% endif %}
 {% endblock %}
 
 {% block script %}
-{% if custom.redirect_to %}
-<script>
-    // This code must be run *as early as possible*, as we care about redirecting the user
-    // *somewhere* immediately. So this isn't wrapped in a window.onload or similar, but bare.
-    // This code is also loaded directly in <head>, so it will block page load.
-    const curUrl = new URL(document.location);
-    // if next query param is presentm just do nothing
-    const nextUrl = curUrl.searchParams.get('next');
-    // /hub/ being next should be treated same as no next present
-    if (!nextUrl || nextUrl === "/hub/") {
-        // The 'unified' home page for all the hubs is elsewhere
-        // so anyone landing on the home page should just be redirected.
-        window.location.replace({{custom.redirect_to|tojson}});
-    } else {
-        // The user has landed on this page, which means they are not actually logged in,
-        // and need to login to continue to wherever they are going. So let's construct the
-        // appropriate oauth_login URL for them to go to.
-        let oauthLoginUrl = new URL(document.location);
-        // Pass along all url parameters we got, just change from /login to /oauth_login
-        oauthLoginUrl.pathname = "/oauth_login";
-        window.location.replace(oauthLoginUrl);
-    }
-</script>
-{% else %}
-{{ super() }}
-{% endif %}
+  {% if custom.redirect_to %}
+    <script>
+      // This code must be run *as early as possible*, as we care about redirecting the user
+      // *somewhere* immediately. So this isn't wrapped in a window.onload or similar, but bare.
+      // This code is also loaded directly in <head>, so it will block page load.
+      const curUrl = new URL(document.location);
+      // if next query param is presentm just do nothing
+      const nextUrl = curUrl.searchParams.get('next');
+      // /hub/ being next should be treated same as no next present
+      if (!nextUrl || nextUrl === "/hub/") {
+          // The 'unified' home page for all the hubs is elsewhere
+          // so anyone landing on the home page should just be redirected.
+          window.location.replace({{ custom.redirect_to | tojson }});
+      } else {
+          // The user has landed on this page, which means they are not actually logged in,
+          // and need to login to continue to wherever they are going. So let's construct the
+          // appropriate oauth_login URL for them to go to.
+          let oauthLoginUrl = new URL(document.location);
+          // Pass along all url parameters we got, just change from /login to /oauth_login
+          oauthLoginUrl.pathname = "/oauth_login";
+          window.location.replace(oauthLoginUrl);
+      }
+    </script>
+  {% else %}
+    {{ super() }}
+  {% endif %}
 {% endblock %}
 
 {% block main %}
-{% if not custom.redirect_to %}
-<div class="sym" id="home" data-authenticator-login-url="{{authenticator_login_url}}">
+  {% if not custom.redirect_to %}
+    <div class="sym"
+         id="home"
+         data-authenticator-login-url="{{ authenticator_login_url }}">
 
-  <header class="sym-nav">
-    <div class="sym-wrap sym-nav-inner">
-      <a href="{{ custom.org.url }}" class="sym-lockup">
-        <img src="{{ custom.org.logo_url }}" alt="Schmidt Observatory System" class="hub-logo sym-logo-color" />
-        <img src="{{ static_url("extra-assets/images/sos-logo-white.png") }}" alt="Schmidt Observatory System" class="sym-logo-white" />
-        <span class="sym-lockup-rule" aria-hidden="true"></span>
-        <b>Science<br>Symposium</b>
-      </a>
-    </div>
-  </header>
-
-  <section class="sym-hero">
-    <div class="sym-wrap sym-hero-grid">
-      <div class="sym-hero-text">
-        <img src="{{ custom.org.logo_url }}" alt="" class="sym-hero-logo sym-logo-color" />
-        <img src="{{ static_url("extra-assets/images/sos-logo-white.png") }}" alt="" class="sym-hero-logo sym-logo-white" />
-        <h1 class="hub-login-text">
-          <a href="{{ custom.org.url }}">{{ custom.org.name }}</a>
-          <span class="sym-accent">JupyterHub</span>
-        </h1>
-        <p class="sym-meta"><b>November 3–5, 2026</b><span class="sym-meta-sep" aria-hidden="true">/</span><span>Florence, Italy</span></p>
-
-        {% if custom.announcements is defined %}
-          <div class="announcements">
-            {% for announcement in custom.announcements %}
-            <div class="announcements-text">
-              {{ announcement | safe }}
-            </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-      </div>
-
-      <div class="sym-signin">
-        <span class="sym-orbit sym-orbit-outer" aria-hidden="true"></span>
-        <span class="sym-orbit sym-orbit-inner" aria-hidden="true"><span class="sym-orbit-dot"></span></span>
-        <div class="login-container">
-          <div id="login-main">
-            {% block login_container %}
-            {{ super() }}
-            <p class="sym-signin-hint">
-              Use the event password from the organizers and any username you like.
-              Sign in with the same username each time to get back to your files.
-            </p>
-            <p class="sym-signin-hint sym-signin-ai">
-              AI model interactions on this hub are logged for research. By signing in
-              and using its AI models, you agree to this logging.
-              <a href="#ai-interactions" class="sym-nowrap">How interactions are handled</a>
-            </p>
-            {% endblock %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sym-about">
-    <div class="sym-wrap">
-      <div class="sym-about-head">
-        <h2 class="details-welcome">Your workspace for the symposium</h2>
-        <div class="details-logos">
-          <a href="https://jupyter.org">
-            <img src="{{static_url("extra-assets/images/jupyter-logo.svg") }}" alt='Jupyter' height="44" />
-          </a>
-          <a href="https://rstudio.com">
-            <img src="{{static_url("extra-assets/images/rstudio-logo.svg") }}" alt='RStudio' height="44"/>
+      <header class="sym-nav">
+        <div class="sym-wrap sym-nav-inner">
+          <a href="{{ custom.org.url }}" class="sym-lockup">
+            <img src="{{ custom.org.logo_url }}"
+                 alt="Schmidt Observatory System"
+                 class="hub-logo sym-logo-color" />
+            <img src="{{ static_url('extra-assets/images/sos-logo-white.png') }}"
+                 alt="Schmidt Observatory System"
+                 class="sym-logo-white" />
+            <span class="sym-lockup-rule" aria-hidden="true"></span>
+            <b>Science<br>Symposium</b>
           </a>
         </div>
-      </div>
+      </header>
 
-      <dl class="questions sym-info">
-        <div class="sym-info-row">
-          <dt>What is this hub?</dt>
-          <dd>
-            A shared computing environment for the {{ custom.org.name }}.
-            You work in JupyterLab, with RStudio also available, and Schmidt Observatory
-            System data is already connected. There is nothing to install.
-          </dd>
-        </div>
-        <div class="sym-info-row">
-          <dt>Who can sign in?</dt>
-          <dd>
-            Symposium attendees, instructors and organizers, using the event password
-            from the organizers.
-          </dd>
-        </div>
-        <div class="sym-info-row">
-          <dt>How long will my work be kept?</dt>
-          <dd>
-            The hub is for the symposium only and will be shut down after the event.
-            Download your notebooks or push them to GitHub to keep them.
-          </dd>
-        </div>
-        <div class="sym-info-row">
-          <dt>Where can I learn more?</dt>
-          <dd>
-            {% if custom.learn_more is defined %}
-              {{ custom.learn_more | safe }}
-            {% else %}
-              The <a href="https://2i2c.org/pilot">2i2c Pilot Hubs Documentation</a> has all of the information that you need to use the hub, as well as information about the deployment technology.
+      <section class="sym-hero">
+        <div class="sym-wrap sym-hero-grid">
+          <div class="sym-hero-text">
+            <img src="{{ custom.org.logo_url }}"
+                 alt=""
+                 class="sym-hero-logo sym-logo-color" />
+            <img src="{{ static_url('extra-assets/images/sos-logo-white.png') }}"
+                 alt=""
+                 class="sym-hero-logo sym-logo-white" />
+            <h1 class="hub-login-text">
+              <a href="{{ custom.org.url }}">{{ custom.org.name }}</a>
+              <span class="sym-accent">JupyterHub</span>
+            </h1>
+            <p class="sym-meta">
+              <b>November 3–5, 2026</b><span class="sym-meta-sep" aria-hidden="true">/</span><span>Florence, Italy</span>
+            </p>
+
+            {% if custom.announcements is defined %}
+              <div class="announcements">
+                {% for announcement in custom.announcements %}
+                  <div class="announcements-text">{{ announcement | safe }}</div>
+                {% endfor %}
+              </div>
             {% endif %}
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </section>
+          </div>
 
-  <section class="sym-ai" id="ai-interactions" aria-labelledby="sym-ai-title">
-    <div class="sym-wrap sym-split">
-      <h2 id="sym-ai-title" class="sym-split-title">AI interactions</h2>
-      <div class="sym-ai-body">
-        <p>
-          To help improve AI-assisted research software tools, this hub logs your
-          interactions with AI models (prompts, model responses, plugin usage patterns
-          and session metadata) through the LiteLLM AI Gateway of the
-          <a href="https://arxiv.org/abs/2607.02703">LLMoxie</a> AI platform.
-          These logs are:
-        </p>
-        <ul class="sym-ai-list">
-          <li><b>De-identified.</b> They are not linked to your name.</li>
-          <li><b>Used for research only.</b> They serve research and product improvement and nothing else.</li>
-          <li><b>Not shared in identifiable form.</b> They are never shared with third parties in a re-identifiable form.</li>
-          <li><b>Not used for model training purposes.</b> These requests are routed to Microsoft Foundry, where data is only retained for <a href="https://learn.microsoft.com/en-us/azure/foundry/responsible-ai/claude-models/data-privacy">harmful content screening</a>.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="sym-thanks" aria-labelledby="sym-thanks-title">
-    <div class="sym-wrap sym-split">
-      <h2 id="sym-thanks-title" class="sym-split-title">Acknowledgments</h2>
-      <ul class="sym-thanks-list">
-        <li>
-          <a href="https://escience.washington.edu/">eScience Institute</a>
-          <span>University of Washington</span>
-        </li>
-        <li>
-          <a href="https://escience.washington.edu/software-engineering/ssec/">Scientific Software Engineering Center</a>
-          <span>eScience Institute, University of Washington</span>
-        </li>
-        <li>
-          <a href="https://2i2c.org/">2i2c</a>
-          <span>International Interactive Computing Collaboration</span>
-        </li>
-        <li>
-          <a href="https://www.schmidtsciences.org/viss/">Virtual Institute for Scientific Software</a>
-          <span>Schmidt Sciences</span>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <footer class="footer sym-footer">
-    <div class="sym-wrap">
-      <div class="sym-footer-top">
-        <div class="sym-footer-brand">
-          <img src="{{ static_url("extra-assets/images/sos-logo-white.png") }}" alt="{{ custom.org.name }}" class="sym-footer-logo" />
-          <div class="sym-cobrand">
-            <span>An initiative of</span>
-            <a href="https://www.schmidtsciences.org/">
-              <img src="{{ static_url("extra-assets/images/schmidt-sciences-white.png") }}" alt="Schmidt Sciences" />
-            </a>
+          <div class="sym-signin">
+            <span class="sym-orbit sym-orbit-outer" aria-hidden="true"></span>
+            <span class="sym-orbit sym-orbit-inner" aria-hidden="true"><span class="sym-orbit-dot"></span></span>
+            <div class="login-container">
+              <div id="login-main">
+                {% block login_container %}
+                  {{ super() }}
+                  <p class="sym-signin-hint">
+                    Use the event password from the organizers and any username you like.
+                    Sign in with the same username each time to get back to your files.
+                  </p>
+                  <p class="sym-signin-hint sym-signin-ai">
+                    AI model interactions on this hub are logged for research. By signing in
+                    and using its AI models, you agree to this logging.
+                    <a href="#ai-interactions" class="sym-nowrap">How interactions are handled</a>
+                  </p>
+                {% endblock %}
+              </div>
+            </div>
           </div>
         </div>
-        <div id="operated-by" class="sym-credits">
-          <div>
-            <h5>Operated by</h5>
-            {%- if custom.operated_by.custom_html %}
-            <p>{{ custom.operated_by.custom_html | safe }}</p>
-            {%- else %}
-            <p><a href="{{ custom.operated_by.url }}">{{ custom.operated_by.name }}</a></p>
-            {%- endif %}
+      </section>
+
+      <section class="sym-about">
+        <div class="sym-wrap">
+          <div class="sym-about-head">
+            <h2 class="details-welcome">Your workspace for the symposium</h2>
+            <div class="details-logos">
+              <a href="https://jupyter.org">
+                <img src="{{ static_url('extra-assets/images/jupyter-logo.svg') }}"
+                     alt="Jupyter"
+                     height="44" />
+              </a>
+              <a href="https://rstudio.com">
+                <img src="{{ static_url('extra-assets/images/rstudio-logo.svg') }}"
+                     alt="RStudio"
+                     height="44" />
+              </a>
+            </div>
           </div>
-          <div>
-            <h5>Funded by</h5>
-            {%- if custom.funded_by.custom_html %}
-            <p>{{ custom.funded_by.custom_html | safe }}</p>
-            {%- else %}
-            <p><a href="{{ custom.funded_by.url }}">{{ custom.funded_by.name }}</a></p>
-            {%- endif %}
-          </div>
-          <div>
-            <h5>Designed by</h5>
-            {%- if custom.designed_by.custom_html %}
-            <p>{{ custom.designed_by.custom_html | safe }}</p>
-            {%- else %}
-            <p><a href="{{ custom.designed_by.url }}">{{ custom.designed_by.name }}</a></p>
-            {%- endif %}
+
+          <dl class="questions sym-info">
+            <div class="sym-info-row">
+              <dt>What is this hub?</dt>
+              <dd>
+                A shared computing environment for the {{ custom.org.name }}.
+                You work in JupyterLab, with RStudio also available, and Schmidt Observatory
+                System data is already connected. There is nothing to install.
+              </dd>
+            </div>
+            <div class="sym-info-row">
+              <dt>Who can sign in?</dt>
+              <dd>
+                Symposium attendees, instructors and organizers, using the event password
+                from the organizers.
+              </dd>
+            </div>
+            <div class="sym-info-row">
+              <dt>How long will my work be kept?</dt>
+              <dd>
+                The hub is for the symposium only and will be shut down after the event.
+                Download your notebooks or push them to GitHub to keep them.
+              </dd>
+            </div>
+            <div class="sym-info-row">
+              <dt>Where can I learn more?</dt>
+              <dd>
+                {% if custom.learn_more is defined %}
+                  {{ custom.learn_more | safe }}
+                {% else %}
+                  The <a href="https://2i2c.org/pilot">2i2c Pilot Hubs Documentation</a> has all of the information that you need to use the hub, as well as information about the deployment technology.
+                {% endif %}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="sym-ai" id="ai-interactions" aria-labelledby="sym-ai-title">
+        <div class="sym-wrap sym-split">
+          <h2 id="sym-ai-title" class="sym-split-title">AI interactions</h2>
+          <div class="sym-ai-body">
+            <p>
+              To help improve AI-assisted research software tools, this hub logs your
+              interactions with AI models (prompts, model responses, plugin usage patterns
+              and session metadata) through the LiteLLM AI Gateway of the
+              <a href="https://arxiv.org/abs/2607.02703">LLMoxie</a> AI platform.
+              These logs are:
+            </p>
+            <ul class="sym-ai-list">
+              <li><b>De-identified.</b> They are not linked to your name.</li>
+              <li><b>Used for research only.</b> They serve research and product improvement and nothing else.</li>
+              <li><b>Not shared in identifiable form.</b> They are never shared with third parties in a re-identifiable form.</li>
+              <li><b>Not used for model training purposes.</b> These requests are routed to Microsoft Foundry, where data is only retained for <a href="https://learn.microsoft.com/en-us/azure/foundry/responsible-ai/claude-models/data-privacy">harmful content screening</a>.</li>
+            </ul>
           </div>
         </div>
-      </div>
-      <div class="sym-footer-small">
-        <p>
-          This service is run transparently from
-          <a href="https://github.com/2i2c-org/infrastructure" class="sym-nowrap">github.com/2i2c-org/infrastructure</a>
-        </p>
-        <p>
-          Built with
-          <a href="https://k8s.org">Kubernetes</a>,
-          <a href="https://helm.sh">Helm</a>,
-          <a href="https://docker.com">Docker</a>,
-          <a href="https://github.com/conda-forge/miniforge">Miniforge</a> and
-          many parts of the <a href="https://jupyter.org">Jupyter Project</a>
-        </p>
-      </div>
+      </section>
+
+      <section class="sym-thanks" aria-labelledby="sym-thanks-title">
+        <div class="sym-wrap sym-split">
+          <h2 id="sym-thanks-title" class="sym-split-title">Acknowledgments</h2>
+          <ul class="sym-thanks-list">
+            <li>
+              <a href="https://escience.washington.edu/">eScience Institute</a>
+              <span>University of Washington</span>
+            </li>
+            <li>
+              <a href="https://escience.washington.edu/software-engineering/ssec/">Scientific Software Engineering Center</a>
+              <span>eScience Institute, University of Washington</span>
+            </li>
+            <li>
+              <a href="https://2i2c.org/">2i2c</a>
+              <span>International Interactive Computing Collaboration</span>
+            </li>
+            <li>
+              <a href="https://www.schmidtsciences.org/viss/">Virtual Institute for Scientific Software</a>
+              <span>Schmidt Sciences</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="footer sym-footer">
+        <div class="sym-wrap">
+          <div class="sym-footer-top">
+            <div class="sym-footer-brand">
+              <img src="{{ static_url('extra-assets/images/sos-logo-white.png') }}"
+                   alt="{{ custom.org.name }}"
+                   class="sym-footer-logo" />
+              <div class="sym-cobrand">
+                <span>An initiative of</span>
+                <a href="https://www.schmidtsciences.org/">
+                  <img src="{{ static_url('extra-assets/images/schmidt-sciences-white.png') }}"
+                       alt="Schmidt Sciences" />
+                </a>
+              </div>
+            </div>
+            <div id="operated-by" class="sym-credits">
+              <div>
+                <h5>Operated by</h5>
+                {%- if custom.operated_by.custom_html %}
+                  <p>{{ custom.operated_by.custom_html | safe }}</p>
+                {%- else %}
+                  <p><a href="{{ custom.operated_by.url }}">{{ custom.operated_by.name }}</a></p>
+                {%- endif %}
+              </div>
+              <div>
+                <h5>Funded by</h5>
+                {%- if custom.funded_by.custom_html %}
+                  <p>{{ custom.funded_by.custom_html | safe }}</p>
+                {%- else %}
+                  <p><a href="{{ custom.funded_by.url }}">{{ custom.funded_by.name }}</a></p>
+                {%- endif %}
+              </div>
+              <div>
+                <h5>Designed by</h5>
+                {%- if custom.designed_by.custom_html %}
+                  <p>{{ custom.designed_by.custom_html | safe }}</p>
+                {%- else %}
+                  <p><a href="{{ custom.designed_by.url }}">{{ custom.designed_by.name }}</a></p>
+                {%- endif %}
+              </div>
+            </div>
+          </div>
+          <div class="sym-footer-small">
+            <p>
+              This service is run transparently from
+              <a href="https://github.com/2i2c-org/infrastructure"
+                 class="sym-nowrap">github.com/2i2c-org/infrastructure</a>
+            </p>
+            <p>
+              Built with
+              <a href="https://k8s.org">Kubernetes</a>,
+              <a href="https://helm.sh">Helm</a>,
+              <a href="https://docker.com">Docker</a>,
+              <a href="https://github.com/conda-forge/miniforge">Miniforge</a> and
+              many parts of the <a href="https://jupyter.org">Jupyter Project</a>
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
-  </footer>
-</div>
-{% endif %}
+  {% endif %}
 {% endblock %}
