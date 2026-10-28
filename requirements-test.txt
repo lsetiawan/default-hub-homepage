@@ -1,0 +1,3 @@
+-r requirements.txt
+html5lib
+playwright
